@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#F2F6EC">
+<title>שומר טבע — SHOMER Nature · Guardians of Wild & Coast</title>
+<link rel="canonical" href="nature.html">
+<meta http-equiv="refresh" content="1; url=nature.html">
+<script>
+// Self-heal: this org's GitHub Pages projects share ONE origin
+// (<org>.github.io), so a service worker left behind by a sibling project
+// can hijack navigations and serve the wrong app. Unregister any worker that
+// isn't SHOMER Nature's, then continue to the app.
+(function () {
+  var BASE = location.pathname.replace(/index\.html$/, '');
+  // Cache-bust the app shell so a stale HTTP/SW copy can never pin an old build.
+  var go = function () {
+    var sep = location.search ? '&' : '?';
+    location.replace('nature.html' + location.search + sep + 'v=' + Date.now() + location.hash);
+  };
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (regs) {
+      var jobs = regs
+        .filter(function (r) { return r.scope.indexOf(location.origin + BASE) !== 0; })
+        .map(function (r) { return r.unregister(); });
+      return Promise.all(jobs);
+    }).catch(function () {}).then(go);
+  } else { go(); }
+  setTimeout(go, 1500); // hard fallback
+})();
+</script>
+<style>html,body{margin:0;height:100%;background:#F2F6EC;color:#15271B;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center}a{color:#178A4B}</style>
+</head>
+<body>
+<p>Loading SHOMER Nature… <a href="nature.html">tap to continue</a></p>
+</body>
+</html>
