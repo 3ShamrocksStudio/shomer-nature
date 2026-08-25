@@ -3074,7 +3074,7 @@ window.addEventListener('beforeinstallprompt',e=>{
   e.preventDefault();deferredPrompt=e;
   setTimeout(showA2HS,3000);
 });
-function showA2HS(){
+async function showA2HS(){
   if(!deferredPrompt||document.querySelector('.a2hs'))return;
   const d=document.createElement('div');d.className='a2hs';
   d.innerHTML=`<img class="a2hs-icon" src="logo-192.png" alt=""><div class="a2hs-text"><div class="a2hs-t">${currentLang==='he'?'התקן את שומר טבע':'Install SHOMER Nature'}</div><div class="a2hs-s">${currentLang==='he'?'גישה מהירה מהמסך הראשי':'Quick access from home screen'}</div></div><button class="a2hs-btn" id="a2hs-install">${currentLang==='he'?'התקן':'Install'}</button><span class="a2hs-x" id="a2hs-close">✕</span>`;
