@@ -1,59 +1,21 @@
 {
-  "name": "SHOMER Nature — שומר טבע · Guardians of Wild & Coast",
-  "short_name": "SHOMER Nature",
-  "description": "Citizens guarding Israel's wild places and coastline. One live map for nature hazards — wildfire, illegal dumping, injured wildlife, rip currents & drowning, lost hikers, beach hazards and pollution — with instant SOS and a direct line to the authorities. By 3Shamrocks.Studio",
-  "start_url": "nature.html",
-  "scope": "./",
+  "name": "SH✡MER Nature",
+  "short_name": "SH✡MER Nature",
+  "description": "רשת שמירה לטבע, חוף ים, בעלי חיים וסביבה",
+  "start_url": "/shomer-nature/",
   "display": "standalone",
-  "background_color": "#F2F6EC",
-  "theme_color": "#F2F6EC",
-  "orientation": "portrait",
+  "background_color": "#0A2010",
+  "theme_color": "#0A2010",
   "icons": [
     {
-      "src": "logo-192.png",
+      "src": "/shomer-nature/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
-      "src": "logo-512.png",
+      "src": "/shomer-nature/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
-  ],
-  "shortcuts": [
-    {
-      "name": "SOS Emergency",
-      "short_name": "SOS",
-      "description": "Trigger an immediate nature emergency alert",
-      "url": "nature.html?sos=true",
-      "icons": [
-        {
-          "src": "sos-icon-96.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Report Hazard",
-      "short_name": "Report",
-      "description": "Quickly report a wildfire, rip current, injured animal or pollution",
-      "url": "nature.html#report",
-      "icons": [
-        {
-          "src": "report-icon-96.png",
-          "sizes": "96x96"
-        }
-      ]
-    }
-  ],
-  "categories": [
-    "environment",
-    "nature",
-    "safety",
-    "community"
-  ],
-  "lang": "he",
-  "dir": "rtl"
+  ]
 }
