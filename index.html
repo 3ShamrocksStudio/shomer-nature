@@ -2,7 +2,14 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0A2010">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SH✡MER Nature">
+  <meta property="og:image" content="https://3shamrocksstudio.github.io/shomer-nature/">
+  <meta property="og:type" content="website">
+  <link rel="manifest" href="/shomer-nature/manifest.json">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>SH✡MER Nature — שומרים על מי שאין לו קול</title>
 <meta name="description" content="אותה רשת שמירה — הפעם ליער, לחוף, לחי ולסביבה.">
 <link rel="icon" href="badge-192.png">
@@ -325,5 +332,6 @@ document.addEventListener('keydown',function(e){
     io.observe(e);});
 })();
 </script>
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('/shomer-nature/sw.js').catch(()=>{});</script>
 </body>
 </html>
