@@ -11,7 +11,7 @@
 <meta http-equiv="X-Frame-Options" content="DENY">
 <meta http-equiv="Referrer-Policy" content="no-referrer">
 <!-- CSP: no eval. Allows Leaflet (cdnjs) + OpenStreetMap tiles at runtime; everything else self-hosted. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://cdnjs.cloudflare.com https://*.tile.openstreetmap.org; connect-src 'self' https://*.tile.openstreetmap.org; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; manifest-src 'self'; worker-src 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://cdnjs.cloudflare.com https://*.tile.openstreetmap.org; connect-src 'self' https://*.tile.openstreetmap.org https://*.firebaseio.com https://shomergency-default-rtdb.firebaseio.com https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseinstallations.googleapis.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://www.gstatic.com; manifest-src 'self'; worker-src 'self';">
 <title>SHOMER Nature · שומר טבע — Guardians of the Wild & Coast</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo-192.png">
@@ -22,6 +22,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Heebo:wght@400;500;600;700;800;900&family=Fraunces:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
 <!-- Leaflet — real interactive map (loaded by the browser at runtime, CSP-pinned to cdnjs) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
 /* ═══════════════════════════════════════
@@ -1346,6 +1349,12 @@ function deepMerge(base,o){
   return out;
 }
 function loadStore(){try{const r=localStorage.getItem(SKEY);if(r)SS=deepMerge(SS,JSON.parse(r));}catch(e){}}
+/* ── Shared SH✡MER backend (reuses the secured shomergency project) ── */
+var FB={ready:false,uid:null,idToken:null};
+var FB_REST='https://shomergency-default-rtdb.firebaseio.com';
+var SHOMER_FB={apiKey:'AIzaSyAfevYysNLWMtXluY5lZSM_VY0eyDwZ6KQ',authDomain:'shomergency.firebaseapp.com',databaseURL:FB_REST,projectId:'shomergency',storageBucket:'shomergency.firebasestorage.app',messagingSenderId:'745767303099',appId:'1:745767303099:web:6c9605fbba940430b7769e'};
+function fbInit(){try{if(!window.firebase||!firebase.initializeApp)return;if(!firebase.apps||!firebase.apps.length)firebase.initializeApp(SHOMER_FB);firebase.auth().signInAnonymously().then(function(c){FB.uid=c.user.uid;return c.user.getIdToken();}).then(function(t){FB.idToken=t;FB.ready=true;}).catch(function(e){console.warn('[FB Nature] auth failed',e&&e.code);});}catch(e){console.warn('[FB Nature] init',e);}}
+function fbRestWrite(method,path,val){if(!FB.idToken)return Promise.reject(new Error('no-auth'));var url=FB_REST+'/'+path+'.json?auth='+encodeURIComponent(FB.idToken);var opt={method:method,headers:{'Content-Type':'application/json'}};if(method!=='DELETE')opt.body=JSON.stringify(val);return fetch(url,opt).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json().catch(function(){return null;});});}
 function saveStore(){try{
   // Strip transient fields (_detIdx) before persisting.
   const clean={...SS,reports:SS.reports.map(r=>{const c={...r};delete c._detIdx;return c;})};
@@ -2340,7 +2349,11 @@ function activateSOS(){
   setText('ss-s',he?'ממתין לתגובה...':'Waiting for response...');
   addSOSPin();
   injectSOSCard();
-  toast(he?' SOS שודר — שומרים בקרבתך עודכנו (סימולציה)':' SOS broadcast — nearby guardians notified (simulated)','red');
+  try{ if(FB.ready && typeof userLat==='number' && typeof userLng==='number'){
+    var _rec={uid:FB.uid,lat:+userLat,lng:+userLng,type:'nature',typeState:curSosTrigger||'manual',ts:Date.now(),resolved:false,name:(SS.user&&SS.user.name)||'Shomer Nature'};
+    fbRestWrite('PUT','sos/'+curSosId,_rec).then(function(){ fbRestWrite('PUT','dashfeed/'+curSosId,{type:'nature-sos',lat:+(+userLat).toFixed(2),lng:+(+userLng).toFixed(2),ts:Date.now(),status:'active',by:FB.uid}).catch(function(){}); }).catch(function(e){console.warn('[FB Nature] sos write',e&&e.message);});
+  } }catch(e){}
+  toast(he?' SOS שודר לרשת SH✡MER — שומרים בקרבתך עודכנו':' SOS broadcast to the SH✡MER network — nearby guardians notified','red');
   // Auto-dial prompt (opens dialer; a native app could place the call directly).
   setTimeout(()=>{
     if(sosPhase!=='active')return;
@@ -2368,6 +2381,7 @@ function resolveSOS(){
   document.getElementById('sos-strip').classList.remove('on');
   const ov=document.getElementById('sos-resolve');
   if(ov){ov.classList.add('on');ov.setAttribute('aria-hidden','false');}
+  try{ if(FB.ready && curSosId){ fbRestWrite('PUT','sos/'+curSosId+'/resolved',true).catch(function(){}); fbRestWrite('PUT','sos/'+curSosId+'/resolvedTs',Date.now()).catch(function(){}); fbRestWrite('PUT','dashfeed/'+curSosId+'/status','resolved').catch(function(){}); } }catch(e){}
 }
 /* Resolution choice. accidental/test are scrubbed from the map + feed and never shown
    to others; only confirmed-real events remain mapped. */
@@ -3083,5 +3097,6 @@ async function showA2HS(){
   document.getElementById('a2hs-close').onclick=()=>d.remove();
 }
 </script>
+<script>try{fbInit();}catch(e){}</script>
 </body>
 </html>
