@@ -1,0 +1,24 @@
+{
+  "name": "shomer-nature",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SH✡MER Nature — Guardians of the Wild & Coast.",
+  "scripts": {
+    "sync:web": "node scripts/copy-web.js",
+    "build": "npm run sync:web && npx cap sync",
+    "android": "npm run build && npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/app": "^6.0.1",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/geolocation": "^6.0.1",
+    "@capacitor/haptics": "^6.0.1",
+    "@capacitor/local-notifications": "^6.1.0",
+    "@capacitor/splash-screen": "^6.0.2",
+    "@capacitor/status-bar": "^6.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2"
+  }
+}
