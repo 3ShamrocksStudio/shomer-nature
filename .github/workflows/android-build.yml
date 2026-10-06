@@ -30,7 +30,7 @@ jobs:
       - name: Add Android platform
         working-directory: native
         run: npx cap add android
-      - name: Patch SDK levels + Gradle/AGP + version (Play: minSdk24, target/compile 36)
+      - name: "Patch SDK levels, Gradle/AGP and version (Play minSdk24, target/compile 36)"
         working-directory: native/android
         run: |
           sed -i -E 's/minSdkVersion *= *[0-9]+/minSdkVersion = 24/' variables.gradle
