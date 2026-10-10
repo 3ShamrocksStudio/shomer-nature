@@ -100,6 +100,10 @@ nav{position:fixed;inset-inline:0;top:0;z-index:60;background:rgba(8,18,12,.92);
 .sec-light .step h3{color:var(--ink-on-light)}
 .sec-light .step p{color:var(--ink2-on-light)}
 .sec-light .step .n{background:var(--ink-on-light)}
+.sec-light .val h3{color:var(--ink-on-light)} .sec-light .val p{color:var(--ink2-on-light)}
+.brand .wm{white-space:nowrap}
+@media (max-width:640px){ .hero-bg img{object-position:82% 50%} }
+@media (max-width:440px){ .nav-r .btn-sm{display:none} .lang button{width:34px} .brand{font-size:15px} }
 .sec-head{text-align:center;max-width:24ch;margin:0 auto var(--s5)}
 .sec-head .eyebrow{display:block;margin-bottom:var(--s2)}
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s4)}
@@ -162,7 +166,7 @@ footer p{font-size:13px;color:var(--tx2)}
 <body>
 
 <nav><div class="w nav-in">
-  <span class="brand"><img src="nature-badge.png" alt="">SH<i>✡</i>MER <span style="color:#2F8A10">Nature</span></span>
+  <span class="brand"><img src="nature-badge.png" alt=""><span dir="ltr" class="wm">SH<i>✡</i>MER <span style="color:#50DB0F">Nature</span></span></span>
   <span class="nav-r">
     <span class="lang">
       <button class="on" id="L-he" onclick="setLang('he')">עב</button>
