@@ -1787,6 +1787,7 @@ body.otp-active .ob-steps{display:none!important;}
  <div class="ss-main">
  <div class="ss-t" id="ss-t">SOS פעיל - אזעקה פועלת · מיקומך שותף</div>
  <div class="ss-s" id="ss-s">ממתין לתגובה...</div>
+  <div class="ss-s" id="ss-grid" hidden dir="ltr" style="font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;letter-spacing:.3px;user-select:all"></div>
  </div>
  <button class="ss-x" onclick="resolveSOS()" id="ss-cancel">✓ <span id="ss-cancel-lbl">אני בטוח/ה</span></button>
  </div>
@@ -3207,6 +3208,26 @@ let newUpd=0, repLock=false, menuOpen=false;
 let user={name:'',phone:'',city:''};
 let camStream=null, photos=[];
 let userLat=null, userLng=null;
+/* v276: Israel grid (ITM, EPSG:2039) on the live SOS bar - rescue units ask for these numbers.
+   WGS84 -> Israel 1993 (7-param Helmert, EPSG:1073) -> Transverse Mercator. Checked against PROJ: <0.5 m. */
+function toITM(lat,lon){var d=Math.PI/180,a=6378137,f=1/298.257223563,e2=f*(2-f),p=lat*d,l=lon*d,N=a/Math.sqrt(1-e2*Math.pow(Math.sin(p),2));
+ var X0=N*Math.cos(p)*Math.cos(l)-23.772,Y0=N*Math.cos(p)*Math.sin(l)-17.49,Z0=N*(1-e2)*Math.sin(p)-17.859;
+ var as=Math.PI/648000,rx=.3132*as,ry=1.85274*as,rz=-1.67299*as,sc=1-5.4262e-6;
+ var X=(X0-rz*Y0+ry*Z0)/sc,Y=(rz*X0+Y0-rx*Z0)/sc,Z=(-ry*X0+rx*Y0+Z0)/sc;
+ f=1/298.257222101;e2=f*(2-f);var r=Math.hypot(X,Y);l=Math.atan2(Y,X);p=Math.atan2(Z,r*(1-e2));
+ for(var i=0;i<6;i++){N=a/Math.sqrt(1-e2*Math.pow(Math.sin(p),2));p=Math.atan2(Z+e2*N*Math.sin(p),r);}
+ var k0=1.0000067,p0=31.7343936111111*d,l0=35.2045169444444*d,ep2=e2/(1-e2);
+ var M=function(ph){return a*((1-e2/4-3*e2*e2/64-5*Math.pow(e2,3)/256)*ph-(3*e2/8+3*e2*e2/32+45*Math.pow(e2,3)/1024)*Math.sin(2*ph)+(15*e2*e2/256+45*Math.pow(e2,3)/1024)*Math.sin(4*ph)-(35*Math.pow(e2,3)/3072)*Math.sin(6*ph));};
+ N=a/Math.sqrt(1-e2*Math.pow(Math.sin(p),2));var t=Math.pow(Math.tan(p),2),C=ep2*Math.pow(Math.cos(p),2),A=(l-l0)*Math.cos(p);
+ return {e:Math.round(219529.584+k0*N*(A+(1-t+C)*Math.pow(A,3)/6+(5-18*t+t*t+72*C-58*ep2)*Math.pow(A,5)/120)),
+  n:Math.round(626907.39+k0*(M(p)-M(p0)+N*Math.tan(p)*(A*A/2+(5-t+9*C+4*C*C)*Math.pow(A,4)/24+(61-58*t+t*t+600*C-330*ep2)*Math.pow(A,6)/720)))};}
+function sosGridTick(){ try{ var el=document.getElementById('ss-grid'); if(!el) return;
+ var on=(typeof sosPhase!=='undefined')&&(sosPhase==='active'||sosPhase==='countdown');
+ if(!on||userLat==null||userLng==null||userLat<29||userLat>33.6||userLng<34||userLng>36){ el.hidden=true; return; }
+ var g=toITM(userLat,userLng); el.hidden=false;
+ el.textContent=(currentLang==='he'?'רשת ישראל ':currentLang==='ar'?'شبكة إسرائيل ':'Israel grid ')+g.e+' / '+g.n;
+}catch(e){} }
+setInterval(sosGridTick,2000);
 /* My current position for reports / SOS bus / responders, or null when unknown. (These
    call sites used to read an undefined `myPos`, so every SOS reached guardians WITHOUT a
    location and every community report failed with "location needed".) */
@@ -6669,6 +6690,30 @@ var EMERGENCY_GUIDE=[
   dont:{he:'אל תיכנס/י למים ללא הכשרה · בטביעה ההנשמות חיוניות - אל תסתפק/י בלחיצות בלבד.',en:'Do not enter the water untrained · for drowning the rescue breaths are essential - do not rely on compressions only.',ar:'لا تدخل الماء دون تدريب · في الغرق الأنفاس ضرورية - لا تكتفِ بالضغطات.'},
   src:'Resus Council UK 2025 · British Red Cross · מד״א (MDA)'},
 
+ {id:'flood',e:'',t:{he:'שיטפון בנחל',en:'Flash flood',ar:'سيل جارف'},
+  s:{he:'עלו מיד לנקודה הגבוהה ביותר',en:'Climb to the highest point now',ar:'اصعد فورًا إلى أعلى نقطة'},
+  steps:{he:['שומעים רעש, רואים מים עכורים או גשם באזור? עלו מיד מחוץ לאפיק, לנקודה הגבוהה ביותר בצד הנחל.','חייג/י 100 (משטרה וחילוץ). הקריא/י את קואורדינטות רשת ישראל מפס ה-SOS.','הישאר/י במקום הגבוה וחכה/י לחילוץ. אל תנסה/י לצאת דרך האפיק.','לא חוצים מים זורמים - ברגל או ברכב - עד שהמפלס יורד לגמרי.','התרחק/י משפת המצוק - הגדה עלולה לקרוס.'],
+   en:['Hear a roar, see muddy water or rain upstream? Get out of the stream bed now, to the highest point on the bank.','Call 100 (police & rescue). Read out the Israel grid numbers from the SOS bar.','Stay high and wait for rescue. Do not try to walk out through the channel.','Never cross moving water, on foot or by car, until it has fully dropped.','Keep away from cliff edges - banks collapse.'],
+   ar:['تسمع هديرًا أو ترى مياهًا عكرة أو مطرًا في الأعلى؟ اخرج من مجرى الوادي فورًا إلى أعلى نقطة على الضفة.','اتصل بـ100 (الشرطة والإنقاذ). اقرأ أرقام شبكة إسرائيل من شريط الطوارئ.','ابقَ في المكان المرتفع وانتظر الإنقاذ. لا تحاول الخروج عبر المجرى.','لا تعبر المياه الجارية، سيرًا أو بالسيارة، حتى ينخفض منسوبها تمامًا.','ابتعد عن حافة الجرف - الضفة قد تنهار.']},
+  dont:{he:'לא נכנסים לאפיק ביום עם תחזית גשם - גם כשאצלך שמש. השיטפון מגיע ממרחק. לפני היציאה: מוקד רט״ג ‎*3639‎.',en:'Do not enter a stream bed on a day with rain in the forecast - even if it is sunny where you are. The flood comes from far away. Before you go: Parks Authority line *3639.',ar:'لا تدخل مجرى الوادي في يوم متوقع فيه المطر - حتى لو كانت الشمس مشرقة عندك. السيل يأتي من بعيد. قبل الخروج: خط سلطة الطبيعة ‎*3639‎.'},
+  src:'רשות הטבע והגנים (INPA) · משטרת ישראל - יחידות החילוץ'},
+
+ {id:'heat',e:'',t:{he:'מכת חום / התייבשות',en:'Heat stroke / dehydration',ar:'ضربة شمس / جفاف'},
+  s:{he:'צל, קירור, 101',en:'Shade, cool down, call 101',ar:'ظل، تبريد، 101'},
+  steps:{he:['העבר/י את האדם לצל והשכב/י אותו.','חייג/י 101 - בלבול, הקאות או חוסר הכרה הם מצב חירום.','קרר/י: הרטב/י בגדים ועור במים ואוורר/י. שחרר/י בגדים צמודים.','בהכרה מלאה? תן/י לשתות לגימות קטנות של מים.','השגח/י עד שהעזרה מגיעה.'],
+   en:['Move the person into shade and lay them down.','Call 101 - confusion, vomiting or fainting is an emergency.','Cool them: wet skin and clothes with water and fan them. Loosen tight clothing.','Fully conscious? Give small sips of water.','Stay with them until help arrives.'],
+   ar:['انقل الشخص إلى الظل ومدّده.','اتصل بـ101 - التشوش أو التقيؤ أو فقدان الوعي حالة طارئة.','برّده: بلّل الجلد والملابس بالماء وهوِّه. فكّ الملابس الضيقة.','واعٍ تمامًا؟ أعطه رشفات صغيرة من الماء.','ابقَ معه حتى وصول المساعدة.']},
+  dont:{he:'לא נותנים לשתות למי שאינו בהכרה מלאה · מניעה: יוצאים מוקדם, וחוזרים כשנגמר חצי מהמים.',en:'Do not give drinks to anyone not fully conscious · Prevention: start early, and turn back when half your water is gone.',ar:'لا تعطِ الشراب لمن ليس واعيًا تمامًا · الوقاية: اخرج باكرًا، وعُد عندما ينفد نصف الماء.'},
+  src:'מד״א (MDA) · רשות הטבע והגנים (INPA)'},
+
+ {id:'lost',e:'',t:{he:'הלכתי לאיבוד בשטח',en:'Lost on the trail',ar:'ضللت الطريق في البرية'},
+  s:{he:'עצור/י, חייג/י 100, הישאר/י',en:'Stop, call 100, stay put',ar:'توقف، اتصل بـ100، ابقَ مكانك'},
+  steps:{he:['עצור/י. אל תמשיך/י "לחפש את השביל".','חייג/י 100 (משטרה וחילוץ) והקריא/י את קואורדינטות רשת ישראל מפס ה-SOS.','חסוך/י סוללה: מצב חיסכון, מסך כהה, בלי סרטונים.','הישאר/י במקום גלוי. בלילה - פנס או מסך מהבהב.','שמור/י על חום ומים. הישארו יחד כקבוצה.'],
+   en:['Stop. Do not keep "looking for the trail".','Call 100 (police & rescue) and read out the Israel grid numbers from the SOS bar.','Save battery: low-power mode, dim screen, no video.','Stay somewhere visible. At night, use a flashlight or the strobe.','Keep warm and keep your water. Stay together as a group.'],
+   ar:['توقف. لا تستمر في "البحث عن الطريق".','اتصل بـ100 (الشرطة والإنقاذ) واقرأ أرقام شبكة إسرائيل من شريط الطوارئ.','وفّر البطارية: وضع التوفير، شاشة خافتة، بلا فيديو.','ابقَ في مكان مكشوف. في الليل استعمل مصباحًا أو الوميض.','حافظ على الدفء والماء. ابقوا معًا كمجموعة.']},
+  dont:{he:'לא מתפצלים כדי "לחפש עזרה" · לא יורדים לערוץ או לנחל כדי לקצר.',en:'Do not split up to "go for help" · Do not drop into a gully or stream bed to take a shortcut.',ar:'لا تتفرقوا "لطلب المساعدة" · لا تنزلوا إلى وادٍ أو مجرى لاختصار الطريق.'},
+  src:'משטרת ישראל - יחידות החילוץ · רשות הטבע והגנים (INPA)'},
+
  {id:'shock',e:'🆘',t:{he:'הלם',en:'Shock',ar:'الصدمة'},
   s:{he:'חיוורון, עור קר, חולשה',en:'Pale, cold skin, weakness',ar:'شحوب وبرودة وضعف'},
   steps:{he:['חייג/י 101 - הלם מסכן חיים.','השכב/י את האדם.','הרם/י את הרגליים מעל גובה הלב - אלא אם יש כאב, חשד לפציעת ראש/צוואר/גב/רגל, או קושי בנשימה.','שמור/י עליו חם - כסה/י במעיל או שמיכה.','שחרר/י בגד צמוד, עצור/י דימום בולט בלחץ. הרגע/י והשגח/י.'],
@@ -6733,7 +6778,7 @@ function guidePicto(id,cls){ var p=GUIDE_PICTO[id]; if(!p)return '<span class="'
 /* Per-CATEGORY distinct colour - each emergency is instantly separated at a glance.
    Paired with a unique SHOMER-branded Grok illustration per topic (img/guide/<id>.jpg,
    navy outline + the category accent, airplane-safety-card style). Offline-cached. */
-var GUIDE_CAT={ aed:'#0E8F6E', ptsd:'#7C5CFF', selfdef:'#0E8F6E', cpr:'#E5484D', choke:'#12A594', bleed:'#B21D2B', burn:'#E8811C', stroke:'#8E4EC6', heart:'#D6409F', allergy:'#30A46C', seizure:'#D9A21B', drown:'#2E7DD1', shock:'#5B6AD0', faint:'#9B7DF0', bone:'#A87B4F', call:'#0EA5E9' };
+var GUIDE_CAT={ aed:'#0E8F6E', ptsd:'#7C5CFF', selfdef:'#0E8F6E', cpr:'#E5484D', choke:'#12A594', bleed:'#B21D2B', burn:'#E8811C', stroke:'#8E4EC6', heart:'#D6409F', allergy:'#30A46C', seizure:'#D9A21B', drown:'#2E7DD1', flood:'#3BA3C7', heat:'#E8811C', lost:'#6D4AFF', shock:'#5B6AD0', faint:'#9B7DF0', bone:'#A87B4F', call:'#0EA5E9' };
 function guideCatColor(id){ return GUIDE_CAT[id]||'var(--g3)'; }
 function guideImg(id,cls){ return '<img class="'+(cls||'gd-pic')+'" src="img/guide/'+id+'.jpg" alt="" loading="lazy" decoding="async" onerror="this.style.display=&quot;none&quot;">'; }
 function guideRenderList(q){
@@ -6779,6 +6824,9 @@ var GUIDE_SYN = {
   heat:    ['מכת חום','התייבשות','חום','מיובש','לא מזיע','בלבול','שמש'],
   poison:  ['הרעלה','בלע','רעל','כימיקל','תרופות','מנת יתר','סמים','ניקוי'],
   drown:   ['טביעה','טבע','מים','ים','בריכה','לא נושם','שאב מים'],
+  flood:   ['שיטפון','שטפון','שיטפונות','נחל','ואדי','זרימה','גשם','נלכד','מים','flood','wadi','سيل'],
+  heat:    ['חום','מכת חום','שמש','התייבשות','צמא','סחרחורת','בחילה','heat','dehydration','حر'],
+  lost:    ['איבוד','אבוד','הלכתי לאיבוד','תעיתי','שביל','מסלול','לילה','חושך','lost','trail','تائه'],
   child:   ['ילד','תינוק','פעוט','ילדים','חנק בילד','החייאת ילדים']
 };
 function guideExpand(q){
@@ -9761,7 +9809,7 @@ try{ hydrateIcons(document); }catch(e){}
 /* Loaded-build version - shown in the diagnostic panel so a phone can prove
    whether it's on the latest build or a STALE cached one. Keep in lock-step
    with sw.js SW_VERSION on every deploy. */
-var APP_VER='v275';
+var APP_VER='v276';
 var FB={ready:false,uid:null,db:null,_presTimer:null,connected:false,listening:false,pushState:'default',near:0,swVer:'?',
   authState:'connecting',sdkLoaded:false,persist:'',permErr:null,err:null,wsProbe:'',csp:''};
 /* Always log connection diagnostics to the console so the real failure can be SEEN in Chrome. */
