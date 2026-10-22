@@ -1756,6 +1756,10 @@ body.otp-active .ob-steps{display:none!important;}
   <div class="dd-ic c-circ" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="7" r="3.4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M21 21v-2a4 4 0 0 0-3-3.87M17.5 3.4a4 4 0 0 1 0 7.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
   <span id="dd-circ" data-he="השומרים שלי" data-en="My SHOMERs" data-ar="حُرّاسي">השומרים שלי</span>
  </button>
+ <button class="ddr" onclick="openTrip();closeDD()" role="menuitem">
+  <div class="dd-ic c-circ" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24"><path d="M3 20l6-11 4 6 3-4 5 9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="17" cy="5" r="2" fill="none" stroke="currentColor" stroke-width="2"/></svg></div>
+  <span id="dd-trip" data-he="לוח קבוצה בשטח" data-en="Group trip board" data-ar="لوحة المجموعة في الميدان">לוח קבוצה בשטח</span>
+ </button>
  <button class="ddr" onclick="op('sh-prof');closeDD()" role="menuitem">
   <div class="dd-ic c-prof" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
   <span id="dd-prof" data-he="פרופיל SH✡MER" data-en="SH✡MER Profile">פרופיל SH✡MER</span>
@@ -2483,6 +2487,44 @@ body.otp-active .ob-steps{display:none!important;}
    <button class="gd-back" onclick="guideBackToList()"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="gd-back-lbl">חזרה לרשימה</span></button>
    <div id="guide-detail"></div>
   </div>
+ </div>
+ </div>
+
+<style>
+ .tp-ctl{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+ .tp-ctl label{flex:1;min-width:130px;display:flex;flex-direction:column;gap:4px;font-size:11.5px;font-weight:700;color:var(--tx2)}
+ .tp-ctl select{height:42px;border-radius:var(--r12);background:var(--n3);border:1px solid var(--b2);color:var(--tx0);padding:0 10px;font:600 14px inherit}
+ .tp-arm{width:100%;min-height:48px;border-radius:var(--r12);border:0;font-weight:800;font-size:15px;cursor:pointer;margin-bottom:12px;background:linear-gradient(135deg,#C09020 0%,#E0A828 60%,#F5C840 100%);color:#23170a}
+ .tp-arm.on{background:var(--n3);color:var(--tx0);border:1px solid var(--b2)}
+ .tp-sum{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+ .tp-sum div{background:var(--n3);border:1px solid var(--b1);border-radius:var(--r12);padding:8px 4px;text-align:center}
+ .tp-sum b{display:block;font-size:20px;font-weight:900;color:var(--tx0);font-variant-numeric:tabular-nums}
+ .tp-sum span{font-size:11px;color:var(--tx2);font-weight:700}
+ .tp-row{background:var(--n3);border:1px solid var(--b2);border-radius:var(--r12);padding:12px;margin-bottom:8px;border-inline-start:4px solid var(--b2)}
+ .tp-row.s-live{border-inline-start-color:#2ECC71}.tp-row.s-quiet{border-inline-start-color:#C9A84C}.tp-row.s-silent{border-inline-start-color:#E0A828}.tp-row.s-sos{border-inline-start-color:#E0182C;background:rgba(224,24,44,.14)}
+ .tp-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+ .tp-nm{font-size:15.5px;font-weight:800;color:var(--tx0);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .tp-pill{font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;white-space:nowrap;flex:0 0 auto}
+ .tp-pill.s-live{background:rgba(46,204,113,.16);color:#7EE2A8}.tp-pill.s-quiet{background:rgba(201,168,76,.16);color:#E6CB7A}.tp-pill.s-silent{background:rgba(224,168,40,.22);color:#F5C840}.tp-pill.s-sos{background:#E0182C;color:#fff}.tp-pill.s-none{background:rgba(136,152,184,.16);color:var(--tx2)}
+ .tp-sub{font-size:12.5px;color:var(--tx1);margin-top:4px;line-height:1.45}
+ .tp-grid{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;font-weight:700;color:var(--tx0);direction:ltr;unicode-bidi:isolate;user-select:all}
+ .tp-act{display:flex;gap:8px;margin-top:8px}
+ .tp-act button{flex:1;min-height:40px;border-radius:10px;border:1px solid var(--b2);background:transparent;color:var(--tx0);font-weight:700;font-size:13px;cursor:pointer}
+ .tp-empty{text-align:center;color:var(--tx1);font-size:14px;line-height:1.6;padding:18px 8px}
+ .tp-note{font-size:11.5px;color:var(--tx2);line-height:1.55;margin-top:10px}
+</style>
+ <div class="sheet" id="sh-trip" role="dialog" aria-modal="true" aria-labelledby="trip-ttl">
+ <div class="sh-pill" aria-hidden="true"></div>
+ <div class="sh-head"><span class="sh-ttl" id="trip-ttl" data-he="לוח קבוצה בשטח" data-en="Group trip board" data-ar="لوحة المجموعة في الميدان">לוח קבוצה בשטח</span><button class="sh-x" onclick="cl('sh-trip')" aria-label="סגור"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button></div>
+ <div class="sh-body">
+  <div class="tp-ctl">
+   <label><span data-he="קבוצה" data-en="Group" data-ar="المجموعة">קבוצה</span><select id="tp-cid" onchange="tripSet('cid',this.value)"></select></label>
+   <label><span data-he="התראה כשמישהו שותק" data-en="Alert when someone is silent" data-ar="تنبيه عندما يصمت أحد">התראה כשמישהו שותק</span><select id="tp-silent" onchange="tripSet('silent',+this.value)"></select></label>
+  </div>
+  <button class="tp-arm" id="tp-arm" onclick="tripArm()"></button>
+  <div class="tp-sum" id="tp-sum"></div>
+  <div id="tp-list"></div>
+  <p class="tp-note" id="tp-note"></p>
  </div>
  </div>
 
@@ -6745,6 +6787,115 @@ var EMERGENCY_GUIDE=[
    ar:['اتصل بـ101 (إسعاف) للحالة الطبية، 100 (شرطة) للخطر/العنف، 102 (إطفاء) للحريق/الإنقاذ.','أجب عن أسئلة المُشغّل بالكامل وبدقّة - فهي مهمة.','أعطِ رقم هاتف وعنوانًا كاملًا، وما حدث، وعدد المصابين وحالتهم.','اتبع التعليمات وابقَ على الخط.','أرسل شخصًا لإرشاد الفريق إلى المكان إن أمكن.','ضع الهاتف على مكبّر الصوت لتتصرّف أثناء الحديث.']},
   src:'מד״א Magen David Adom · gov.il (101/100/102)'}
 ];
+/* ═══ v277 · GROUP TRIP BOARD ═══ Leader view over MY paired SHOMERs, built only on real data:
+   presence/<uid> (readable only by guardians the member approved) + live SOS from SOSBUS.
+   Nothing is simulated: a member we have never heard from shows "no signal yet".
+   The last fix is cached on this phone so it survives the member's presence going offline. */
+var TRIP_SILENT=[0,15,30,60];
+function tripState(){ if(!SS.trip) SS.trip={cid:'all',silent:30,on:false,seen:{},alerted:{}}; var t=SS.trip; t.seen=t.seen||{}; t.alerted=t.alerted||{}; if(t.silent==null)t.silent=30; return t; }
+function tripLang(){ return currentLang==='ar'?'ar':currentLang==='en'?'en':'he'; }
+function tripTx(o){ return o[tripLang()]||o.en; }
+function tripMins(ms){ var m=Math.max(0,Math.round(ms/60000)); var L=tripLang();
+  if(m<1) return L==='he'?'עכשיו':L==='ar'?'الآن':'now';
+  if(m<60) return L==='he'?('לפני '+m+' דק׳'):L==='ar'?('قبل '+m+' د'):(m+' min ago');
+  var h=Math.floor(m/60), r=m%60; return L==='he'?('לפני '+h+':'+(r<10?'0':'')+r+' שע׳'):L==='ar'?('قبل '+h+':'+(r<10?'0':'')+r+' س'):(h+'h '+r+'m ago'); }
+function tripMembers(){
+  var t=tripState(), out=[], seenU={};
+  (gdState().pairs||[]).forEach(function(p){
+    if(!p) return; var key=p.partnerUid||('p_'+p.id); if(seenU[key]) return;
+    if(t.cid!=='all'){ var m=(SS.circleMembers||[]).find(function(x){ return (p.partnerUid&&x.partnerUid===p.partnerUid)||x.pairId===p.id; }); if(!m||m.cid!==t.cid) return; }
+    seenU[key]=1; out.push({key:key,uid:p.partnerUid||null,name:p.name||'',ph:String(p.ph||'').replace(/[^\d+]/g,''),pending:!!p.pending||!p.partnerUid});
+  });
+  return out;
+}
+function tripCapture(){
+  var t=tripState(), peers=(FB&&FB._peer)||{}, ch=false;
+  Object.keys(peers).forEach(function(uid){ var v=peers[uid]; if(!v||!v.ts) return;
+    var o=t.seen[uid]||{}; if(o.ts===v.ts) return;
+    var n={ts:v.ts, hid:v.lat==null}; if(v.lat!=null){ n.lat=v.lat; n.lng=v.lng; n.fx=v.ts; } else if(o.lat!=null){ n.lat=o.lat; n.lng=o.lng; n.fx=o.fx; }
+    t.seen[uid]=n; ch=true; });
+  if(ch && (!t._sv || Date.now()-t._sv>60000)){ t._sv=Date.now(); saveStore(); }   /* throttle: presence ticks every ~8s */
+}
+function tripStatus(m){
+  var t=tripState(), now=Date.now();
+  if(m.pending) return {k:'none',age:null};
+  var last=t.seen[m.uid], age=(last&&last.ts)?now-last.ts:null;
+  try{ var sv=SOSBUS.mine[m.uid]; if(sv && sv!=='old') return {k:'sos',age:age,never:age==null}; }catch(e){}
+  if(age==null) return {k:'none',age:null,never:true};
+  if(age<=PSTALE) return {k:'live',age:age};
+  if(t.silent && age>=t.silent*60000) return {k:'silent',age:age};
+  return {k:'quiet',age:age};
+}
+function tripPill(st){ return tripTx({
+  live:{he:'יש קליטה',en:'Signal',ar:'متصل'}, quiet:{he:'שקט',en:'Quiet',ar:'هادئ'}, silent:{he:'שותק/ת',en:'Silent',ar:'صامت'}, sos:{he:'SOS',en:'SOS',ar:'SOS'}, none:{he:'אין נתונים',en:'No data',ar:'لا بيانات'}
+}[st.k]); }
+function renderTrip(){
+  var t=tripState(), L=tripLang(); tripCapture();
+  var cs=document.getElementById('tp-cid'); if(cs){ var cur=t.cid; cs.innerHTML='';
+    var o=document.createElement('option'); o.value='all'; o.textContent=tripTx({he:'כל השומרים שלי',en:'All my SHOMERs',ar:'كل حُرّاسي'}); cs.appendChild(o);
+    circlesList().forEach(function(c){ if(!membersOf(c.id).length) return; var x=document.createElement('option'); x.value=c.id; x.textContent=c.name||''; cs.appendChild(x); });
+    cs.value=cur; if(cs.value!==cur){ t.cid='all'; cs.value='all'; } }
+  var ss=document.getElementById('tp-silent'); if(ss){ ss.innerHTML=''; TRIP_SILENT.forEach(function(v){ var x=document.createElement('option'); x.value=v; x.textContent=v?(v+(L==='he'?' דק׳':L==='ar'?' د':' min')):tripTx({he:'ללא התראה',en:'No alert',ar:'بدون تنبيه'}); ss.appendChild(x); }); ss.value=String(t.silent); }
+  var arm=document.getElementById('tp-arm'); if(arm){ arm.classList.toggle('on',!!t.on);
+    arm.textContent=t.on?tripTx({he:'עצירת מעקב הקבוצה',en:'Stop group watch',ar:'إيقاف متابعة المجموعة'}):tripTx({he:'התחלת מעקב קבוצה',en:'Start group watch',ar:'بدء متابعة المجموعة'}); }
+  var ms=tripMembers(), cnt={all:ms.length,live:0,silent:0,sos:0}, rows=[];
+  ms.forEach(function(m){ var st=tripStatus(m); m.st=st; if(st.k==='live')cnt.live++; if(st.k==='silent')cnt.silent++; if(st.k==='sos')cnt.sos++; rows.push(m); });
+  var rank={sos:0,silent:1,quiet:2,none:3,live:4}; rows.sort(function(a,b){ return (rank[a.st.k]-rank[b.st.k]) || ((b.st.age||0)-(a.st.age||0)); });
+  var sum=document.getElementById('tp-sum'); if(sum){ sum.innerHTML='';
+    [[cnt.all,{he:'בקבוצה',en:'In group',ar:'في المجموعة'}],[cnt.live,{he:'עם קליטה',en:'Signal',ar:'متصل'}],[cnt.silent,{he:'שותקים',en:'Silent',ar:'صامتون'}],[cnt.sos,{he:'SOS',en:'SOS',ar:'SOS'}]].forEach(function(c){
+      var d=document.createElement('div'); var b=document.createElement('b'); b.textContent=c[0]; var sp=document.createElement('span'); sp.textContent=tripTx(c[1]); d.appendChild(b); d.appendChild(sp); sum.appendChild(d); }); }
+  var list=document.getElementById('tp-list'); if(!list) return; list.innerHTML='';
+  if(!ms.length){ var e=document.createElement('div'); e.className='tp-empty';
+    e.textContent=tripTx({he:'עוד אין שומרים מחוברים. הזמינו את חברי הקבוצה ב"השומרים שלי". כל אחד מאשר בעצמו, ורק אז מופיע כאן.',en:'No connected SHOMERs yet. Invite your group from "My SHOMERs". Each member approves on their own phone, and only then appears here.',ar:'لا يوجد حُرّاس متصلون بعد. ادعُ أفراد مجموعتك من "حُرّاسي". كل فرد يوافق من هاتفه، وعندها فقط يظهر هنا.'});
+    var bt=document.createElement('button'); bt.className='tp-arm'; bt.style.marginTop='12px'; bt.textContent=tripTx({he:'הזמנת חברי קבוצה',en:'Invite group members',ar:'دعوة أفراد المجموعة'}); bt.onclick=function(){ cl('sh-trip'); setTimeout(function(){ op('sh-circles'); },250); };
+    list.appendChild(e); list.appendChild(bt); }
+  rows.forEach(function(m){
+    var st=m.st, last=tripState().seen[m.uid]||null;
+    var r=document.createElement('div'); r.className='tp-row s-'+st.k;
+    var top=document.createElement('div'); top.className='tp-top';
+    var nm=document.createElement('span'); nm.className='tp-nm'; nm.textContent=m.name||tripTx({he:'שומר/ת',en:'SHOMER',ar:'حارس'});
+    var pl=document.createElement('span'); pl.className='tp-pill s-'+st.k; pl.textContent=tripPill(st);
+    top.appendChild(nm); top.appendChild(pl); r.appendChild(top);
+    var sub=document.createElement('div'); sub.className='tp-sub'; var bits=[];
+    if(m.pending) bits.push(tripTx({he:'ממתין/ה לאישור החיבור',en:'Waiting to accept your invite',ar:'بانتظار قبول الدعوة'}));
+    else if(st.never) bits.push(tripTx({he:'עוד לא התקבל אות מאז שנפתח הלוח בטלפון הזה',en:'No signal received yet on this phone',ar:'لم تصل إشارة بعد على هذا الهاتف'}));
+    else { bits.push(tripTx({he:'אות אחרון ',en:'Last signal ',ar:'آخر إشارة '})+tripMins(st.age));
+      if(last&&last.hid) bits.push(tripTx({he:'לא משתף/ת מיקום כרגע',en:'Not sharing location now',ar:'لا يشارك الموقع الآن'}));
+      if(last&&last.lat!=null&&userLat!=null){ try{ bits.push(fmtDistance(distMeters(userLat,userLng,last.lat,last.lng))+' '+tripTx({he:'ממך',en:'from you',ar:'منك'})); }catch(e){} } }
+    sub.textContent=bits.join(' · '); r.appendChild(sub);
+    if(last&&last.lat!=null&&last.lat>29&&last.lat<33.6&&last.lng>34&&last.lng<36){
+      var g=toITM(last.lat,last.lng); var gl=document.createElement('div'); gl.className='tp-sub';
+      var lb=document.createTextNode(tripTx({he:'מיקום ידוע אחרון ('+tripMins(Date.now()-(last.fx||last.ts))+'): ',en:'Last known position ('+tripMins(Date.now()-(last.fx||last.ts))+'): ',ar:'آخر موقع معروف ('+tripMins(Date.now()-(last.fx||last.ts))+'): '}));
+      var gv=document.createElement('span'); gv.className='tp-grid'; gv.textContent=g.e+' / '+g.n;
+      gl.appendChild(lb); gl.appendChild(gv); r.appendChild(gl); }
+    var act=document.createElement('div'); act.className='tp-act';
+    if(last&&last.lat!=null){ var mb=document.createElement('button'); mb.textContent=tripTx({he:'הצגה במפה',en:'Show on map',ar:'عرض على الخريطة'});
+      mb.onclick=function(){ cl('sh-trip'); setTimeout(function(){ try{ MAP.setView([last.lat,last.lng],15); }catch(e){} },300); }; act.appendChild(mb); }
+    if(m.ph&&m.ph.length>=9){ var cb=document.createElement('button'); cb.textContent=tripTx({he:'חיוג',en:'Call',ar:'اتصال'}); cb.onclick=function(){ location.href='tel:'+m.ph; }; act.appendChild(cb); }
+    if(act.childNodes.length) r.appendChild(act);
+    list.appendChild(r);
+  });
+  var nt=document.getElementById('tp-note'); if(nt) nt.textContent=tripTx({
+    he:'"שותק/ת" אומר שלא התקבל אות מהטלפון, לא שקרה משהו: סוללה, חוסר קליטה או אפליקציה סגורה. מתקשרים, ואם אין מענה - 100. המיקום נשמר רק על הטלפון שלך.',
+    en:'"Silent" means no signal from that phone, not that something happened: battery, no coverage or a closed app. Call them; if there is no answer, call 100. Positions are kept only on your phone.',
+    ar:'"صامت" يعني أنه لم تصل إشارة من الهاتف، وليس أن شيئًا حدث: بطارية أو انقطاع إرسال أو تطبيق مغلق. اتصل به، وإن لم يرد اتصل بـ100. المواقع تُحفظ على هاتفك فقط.'});
+}
+function tripSet(k,v){ var t=tripState(); t[k]=v; if(k==='silent') t.alerted={}; saveStore(); renderTrip(); }
+function tripArm(){ var t=tripState(); t.on=!t.on; t.alerted={}; saveStore(); renderTrip();
+  if(t.on){ try{ if('Notification' in window && Notification.permission==='default') Notification.requestPermission(); }catch(e){}
+    toast(tripTx({he:'מעקב הקבוצה פועל. תקבל/י התראה כשמישהו שותק.',en:'Group watch is on. You will be alerted when someone goes silent.',ar:'متابعة المجموعة تعمل. ستصلك تنبيهات عندما يصمت أحد.'}),'grn'); } }
+function tripTick(){
+  var t=tripState(); tripCapture();
+  if(t.on && t.silent){ tripMembers().forEach(function(m){ var st=tripStatus(m); if(st.k!=='silent') return;
+    var last=t.seen[m.uid]; if(!last||t.alerted[m.uid]===last.ts) return; t.alerted[m.uid]=last.ts; saveStore();
+    var msg=(m.name||tripTx({he:'שומר/ת',en:'A SHOMER',ar:'حارس'}))+' · '+tripTx({he:'אין אות ',en:'no signal for ',ar:'لا إشارة منذ '})+tripMins(st.age).replace(/^לפני |^قبل |\sago$/g,'');
+    try{ toast(msg,'amb'); }catch(e){} try{ if(navigator.vibrate) navigator.vibrate([300,150,300]); }catch(e){}
+    try{ pushNotifyQuiet('SH✡MER Nature',msg,'trip-'+m.uid); }catch(e){} }); }
+  var sh=document.getElementById('sh-trip'); if(sh&&sh.classList.contains('open')) renderTrip();
+}
+function openTrip(){ try{ syncPairsToCircles(); }catch(e){} renderTrip(); op('sh-trip'); }
+setInterval(function(){ try{ tripTick(); }catch(e){} },30000);
+
 function openGuide(){ guideBackToList(); guideRenderList(''); var s=document.getElementById('guide-search'); if(s)s.value=''; guideApplyLang(); op('sh-guide'); }
 function guideApplyLang(){ var L=currentLang==='ar'?'ar':currentLang==='en'?'en':'he', he=L==='he';
  setText('guide-ttl', he?'מדריך חירום':L==='ar'?'دليل الطوارئ':'Emergency Guide');
@@ -9809,7 +9960,7 @@ try{ hydrateIcons(document); }catch(e){}
 /* Loaded-build version - shown in the diagnostic panel so a phone can prove
    whether it's on the latest build or a STALE cached one. Keep in lock-step
    with sw.js SW_VERSION on every deploy. */
-var APP_VER='v276';
+var APP_VER='v277';
 var FB={ready:false,uid:null,db:null,_presTimer:null,connected:false,listening:false,pushState:'default',near:0,swVer:'?',
   authState:'connecting',sdkLoaded:false,persist:'',permErr:null,err:null,wsProbe:'',csp:''};
 /* Always log connection diagnostics to the console so the real failure can be SEEN in Chrome. */
@@ -10546,6 +10697,7 @@ function fbProcessPeer(){
   var all=FB._peer||{};
   try{ fbApplyPeerPresence(all); }catch(e){}
   try{ fbRenderPeerMarkers(all); }catch(e){}
+  try{ tripTick(); }catch(e){}   /* v277: group trip board */
 }
 function fbProcessPresence(snap){
   if(!snap)return;
