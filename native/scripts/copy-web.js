@@ -17,6 +17,15 @@ for (const f of FILES) {
   if (fs.existsSync(src)) { fs.copyFileSync(src, path.join(WWW, f)); console.log('copied', f); }
 }
 
+/* Emergency-guide pictures are referenced as img/guide/<id>.jpg; without them the offline
+   guide shows no illustrations inside the APK. */
+const GUIDE_SRC = path.join(ROOT, 'img', 'guide'), GUIDE_DST = path.join(WWW, 'img', 'guide');
+if (fs.existsSync(GUIDE_SRC)) {
+  fs.mkdirSync(GUIDE_DST, { recursive: true });
+  for (const f of fs.readdirSync(GUIDE_SRC)) { fs.copyFileSync(path.join(GUIDE_SRC, f), path.join(GUIDE_DST, f)); }
+  console.log('copied img/guide (' + fs.readdirSync(GUIDE_DST).length + ' files)');
+}
+
 let html = fs.readFileSync(path.join(ROOT, 'nature.html'), 'utf8');
 const NATIVE_ORIGINS = "https://localhost capacitor://localhost http://localhost";
 html = html.replace(/(<meta http-equiv="Content-Security-Policy" content=")([^"]*)(")/, function(_, a, csp, c) {
