@@ -7,7 +7,7 @@ const WWW  = path.resolve(__dirname, '..', 'www');
 
 const FILES = [
   'nature.html', 'sw.js', 'manifest.json',
-  'logo-192.png', 'logo-512.png', 'SHOMER_logo_big.png', 'SHOMER-bg.jpg',
+  'logo-192.png', 'logo-512.png', 'icon-192.png', 'icon-512.png', 'nature-badge.png', 'SHOMER-bg.jpg',
   '3shamrocks.png', 'report-icon-96.png', 'sos-icon-96.png'
 ];
 

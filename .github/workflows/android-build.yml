@@ -30,6 +30,9 @@ jobs:
       - name: Add Android platform
         working-directory: native
         run: npx cap add android
+      - name: Apply SH✡MER Nature brand (launcher icons, splash, launch colour)
+        working-directory: native
+        run: node scripts/apply-brand.js
       - name: "Patch SDK levels, Gradle/AGP and version (Play minSdk24, target/compile 36)"
         working-directory: native/android
         run: |

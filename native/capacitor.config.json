@@ -1,11 +1,11 @@
 {
   "appId": "il.co.shomernature",
-  "appName": "SHOMER Nature",
+  "appName": "SH✡MER Nature",
   "webDir": "www",
-  "backgroundColor": "#0b2e1f",
+  "backgroundColor": "#FAF6EC",
   "android": {
     "allowMixedContent": true,
-    "backgroundColor": "#0b2e1f"
+    "backgroundColor": "#FAF6EC"
   },
   "server": {
     "androidScheme": "https",
@@ -14,7 +14,7 @@
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 800,
-      "backgroundColor": "#0b2e1f",
+      "backgroundColor": "#FAF6EC",
       "showSpinner": false
     }
   }
