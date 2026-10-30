@@ -6,7 +6,7 @@ const ROOT = path.resolve(__dirname, '..', '..');
 const WWW  = path.resolve(__dirname, '..', 'www');
 
 const FILES = [
-  'nature.html', 'sw.js', 'manifest.json',
+  'nature.html', 'privacy.html', 'sw.js', 'manifest.json',
   'logo-192.png', 'logo-512.png', 'icon-192.png', 'icon-512.png', 'nature-badge.png', 'SHOMER-bg.jpg',
   '3shamrocks.png', 'report-icon-96.png', 'sos-icon-96.png'
 ];
